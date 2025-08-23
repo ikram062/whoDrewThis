@@ -12,9 +12,9 @@ model User {
   username        String   @unique
   email           String   @unique
   password        String
-  likedPostIds    String[] @db.ObjectId
+  likedPostIds    String[] @default([]) @db.ObjectId
   likedPosts      Post[]   @relation("likes", references: [id], fields: [likedPostIds])
-  favoritePostIds String[] @db.ObjectId
+  favoritePostIds String[] @default([]) @db.ObjectId
   favoritePosts   Post[]   @relation("favorites", references: [id], fields: [favoritePostIds])
 
   posts           Post[]         @relation("posts")
@@ -22,9 +22,9 @@ model User {
   followings      Follower[]     @relation("following")
   lists           List[]
   sentMessages    Message[]      @relation("sender")
-  readMessagesId  String[]       @db.ObjectId
+  readMessagesId  String[]       @default([]) @db.ObjectId
   readMessages    Message[]      @relation("readBy", fields: [readMessagesId], references: [id])
-  conversationsId String[]       @db.ObjectId
+  conversationsId String[]       @default([]) @db.ObjectId
   conversations   Conversation[] @relation(fields: [conversationsId], references: [id])
 }
 
@@ -32,12 +32,12 @@ model Post {
   id               String   @id @default(auto()) @map("_id") @db.ObjectId
   userId           String   @db.ObjectId
   postedBy         User     @relation(name: "posts", fields: [userId], references: [id], onDelete: Cascade)
-  likedUserIds     String[] @db.ObjectId
+  likedUserIds     String[] @default([]) @db.ObjectId
   likes            User[]   @relation("likes", references: [id], fields: [likedUserIds])
-  favoritesUserIds String[] @db.ObjectId
+  favoritesUserIds String[] @default([]) @db.ObjectId
   favorites        User[]   @relation("favorites", references: [id], fields: [favoritesUserIds])
   toPurchase       Boolean  @default(false)
-  listsId          String[] @db.ObjectId
+  listsId          String[] @default([]) @db.ObjectId
   lists            List[]   @relation(fields: [listsId], references: [id])
 }
 
@@ -56,7 +56,7 @@ model List {
   name    String
   userId  String   @db.ObjectId
   user    User     @relation(fields: [userId], references: [id])
-  postsId String[] @db.ObjectId
+  postsId String[] @default([]) @db.ObjectId
   posts   Post[]   @relation(fields: [postsId], references: [id])
 }
 
@@ -69,14 +69,14 @@ model Message {
   conversation   Conversation @relation(fields: [conversationId], references: [id])
   createdAt      DateTime     @default(now())
   deleted        Boolean      @default(false)
-  readByUserIds  String[]     @db.ObjectId
+  readByUserIds  String[]     @default([]) @db.ObjectId
   readBy         User[]       @relation("readBy", fields: [readByUserIds], references: [id])
 }
 
 model Conversation {
   id       String    @id @default(auto()) @map("_id") @db.ObjectId
   name     String?
-  usersId  String[]  @db.ObjectId
+  usersId  String[]  @default([]) @db.ObjectId
   users    User[]    @relation(fields: [usersId], references: [id])
   messages Message[]
 }
