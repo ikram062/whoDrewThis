@@ -7,16 +7,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id              String   @id @default(auto()) @map("_id") @db.ObjectId
-  username        String   @unique
-  email           String   @unique
-  password        String
-  likedPostIds    String[] @default([]) @db.ObjectId
-  likedPosts      Post[]   @relation("likes", references: [id], fields: [likedPostIds])
-  favoritePostIds String[] @default([]) @db.ObjectId
-  favoritePosts   Post[]   @relation("favorites", references: [id], fields: [favoritePostIds])
+enum Role {
+  VIEWER
+  ARTIST
+  MODERATOR
+  ADMIN
+}
 
+model User {
+  id              String         @id @default(auto()) @map("_id") @db.ObjectId
+  username        String         @unique
+  email           String         @unique
+  password        String
+  role            Role           @default(VIEWER)
+  isVerified      Boolean        @default(false)
+  likedPostIds    String[]       @default([]) @db.ObjectId
+  likedPosts      Post[]         @relation("likes", references: [id], fields: [likedPostIds])
+  favoritePostIds String[]       @default([]) @db.ObjectId
+  favoritePosts   Post[]         @relation("favorites", references: [id], fields: [favoritePostIds])
   posts           Post[]         @relation("posts")
   followers       Follower[]     @relation("follower")
   followings      Follower[]     @relation("following")
