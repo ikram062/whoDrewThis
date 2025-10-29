@@ -1,10 +1,5 @@
 import apiService from "../utils/api";
-import type {
-  AuthResponse,
-  CurrentUserResponse,
-  LoginData,
-  RegisterData,
-} from "../utils/types";
+import type { AuthResponse, CurrentUserResponse, LoginData, RegisterData } from "../utils/types";
 
 class AuthApi {
   async register(data: RegisterData): Promise<AuthResponse> {

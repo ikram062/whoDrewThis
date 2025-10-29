@@ -3,19 +3,23 @@ import { generateToken } from "../utils/jwt";
 import bcrypt from "bcrypt";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
-export const register = async (
-  username: string,
-  email: string,
-  password: string
-) => {
+export const register = async (username: string, email: string, password: string) => {
   const saltRounds = 10;
 
-  const userExists = await prisma.user.findUnique({
+  const emailExists = await prisma.user.findUnique({
     where: { email },
   });
 
-  if (userExists) {
+  if (emailExists) {
     throw new Error("Email already used");
+  }
+
+  const usernameExists = await prisma.user.findUnique({
+    where: { username },
+  });
+  
+  if (usernameExists) {
+    throw new Error("Username already used");
   }
 
   const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -57,10 +61,7 @@ export const login = async (email: string, password: string) => {
 };
 
 export const refreshToken = async (refreshToken: string) => {
-  const payload = jwt.verify(
-    refreshToken,
-    process.env.REFRESH_TOKEN_SECRET!
-  ) as JwtPayload;
+  const payload = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!) as JwtPayload;
 
   if (!payload) {
     throw new Error("Invalid refresh token");
